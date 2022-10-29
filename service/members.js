@@ -1,3 +1,4 @@
+require("dotenv").config();
 const MembersRepository = require("../repository/member");
 const nodemailer = require("nodemailer");
 const randomstring = require("randomstring");
@@ -13,8 +14,8 @@ class MembersService {
       port: 465,
       secure: true,
       auth: {
-        user: "alstjq123579@daum.net",
-        pass: "win0700!",
+        user: process.env.DB_EMAIL,
+        pass: process.env.DB_PASSWORD,
       },
     });
 
