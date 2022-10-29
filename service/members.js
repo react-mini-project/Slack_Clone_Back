@@ -36,9 +36,9 @@ class MembersService {
     return random;
   };
 
-  createMembers = async (email, password) => {
-    schema.validate({ email, password });
-    await this.membersRepository.createMembers(email, password);
+  createMembers = async (email) => {
+    schema.validate({ email });
+    await this.membersRepository.createMembers(email);
     return;
   };
 }

@@ -10,8 +10,8 @@ class MembersController {
   };
 
   createMembers = async (req, res, next) => {
-    const { email, password } = req.body;
-    await this.membersService.createMembers(email, password);
+    const { email } = req.body;
+    await this.membersService.createMembers(email);
     res.status(201).json({ message: "회원가입에 성공하였습니다" });
   };
 }
