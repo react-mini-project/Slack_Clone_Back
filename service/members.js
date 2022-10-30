@@ -40,7 +40,7 @@ class MembersService {
     schema.validate({ email });
     await this.membersRepository.createMembers(email);
     return {
-      token: jwt.sign({ email }, process.env.SECRETKEY),
+      token: jwt.sign({ id, email }, process.env.SECRETKEY),
     };
   };
 }
