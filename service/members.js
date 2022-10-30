@@ -36,11 +36,15 @@ class MembersService {
     return random;
   };
 
-  createMembers = async (email) => {
+  createMembers = async (email, SKEY) => {
     schema.validate({ email });
-    await this.membersRepository.createMembers(email);
+    if (SKEY === process.env.SKEY) {
+      await this.membersRepository.createMembers(email);
+    } else {
+      throw new Error();
+    }
     return {
-      token: jwt.sign({ id, email }, process.env.SECRETKEY),
+      token: jwt.sign({ email }, process.env.SECRETKEY),
     };
   };
 }
