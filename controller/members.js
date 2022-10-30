@@ -15,8 +15,12 @@ class MembersController {
 
   createMembers = async (req, res, next) => {
     try {
-      const { email } = req.body;
-      const createMembers = await this.membersService.createMembers(email);
+      const { email, SKEY } = req.body;
+
+      const createMembers = await this.membersService.createMembers(
+        email,
+        SKEY
+      );
       res
         .status(201)
         .json({ data: createMembers, message: "회원가입에 성공했습니다" });
