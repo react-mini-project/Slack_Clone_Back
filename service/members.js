@@ -1,6 +1,7 @@
 require("dotenv").config();
 const Joi = require("joi");
 const MembersRepository = require("../repository/member");
+const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const randomstring = require("randomstring");
 const random = randomstring.generate(6);
@@ -9,9 +10,8 @@ const schema = Joi.object({
     minDomainSegments: 2,
     tlds: { allow: ["com", "net"] },
   }),
-  // nickname: Joi.string().alphanum().min(3).max(10).required(),
-  password: Joi.string().alphanum().min(3).max(10).required(),
 });
+
 class MembersService {
   membersRepository = new MembersRepository();
 
@@ -39,7 +39,9 @@ class MembersService {
   createMembers = async (email) => {
     schema.validate({ email });
     await this.membersRepository.createMembers(email);
-    return;
+    return {
+      token: jwt.sign({ email }, process.env.SECRETKEY),
+    };
   };
 }
 
