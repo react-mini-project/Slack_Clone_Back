@@ -45,6 +45,7 @@ class MembersService {
     }
     return {
       token: `Bearer ${jwt.sign({ email }, process.env.SECRETKEY)}`,
+      email,
     };
   };
 }
