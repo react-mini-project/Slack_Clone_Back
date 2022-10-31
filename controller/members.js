@@ -21,9 +21,10 @@ class MembersController {
         email,
         SKEY
       );
-      res
-        .status(201)
-        .json({ data: createMembers, message: "회원가입에 성공했습니다" });
+      res.status(201).json({
+        data: createMembers,
+        message: "회원가입에 성공했습니다",
+      });
     } catch (err) {
       res.status(400).json({ message: "회원가입에 실패했습니다" });
     }

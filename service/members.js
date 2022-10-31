@@ -44,7 +44,7 @@ class MembersService {
       throw new Error();
     }
     return {
-      token: jwt.sign({ email }, process.env.SECRETKEY),
+      token: `Bearer ${jwt.sign({ email }, process.env.SECRETKEY)}`,
     };
   };
 }
