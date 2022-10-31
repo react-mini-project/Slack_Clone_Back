@@ -26,10 +26,10 @@ const io = require('socket.io')(http)
 const mysql = require('mysql')
 
 const connection = mysql.createConnection({
-host: 'express-database.cdwl0uwak8rz.ap-northeast-2.rds.amazonaws.com',
-user: 'root',
-password: '4321aaaa',
-database: '7weeks_socket',
+host: process.env.DB_END_POINT,
+user: process.env.DB_USER,
+password: process.env.DB_PASSWORD,
+database: process.env.DB_NAME,
 })
 
 io.on("connection", (socket) => {
@@ -50,7 +50,3 @@ const port = 3000
 http.listen(port, () => {
 console.log(`Listening to port ${port}`)
 })
-
-app.listen(PORT, () => {
-  console.log(`localhost:${PORT} is Running`);
-});
