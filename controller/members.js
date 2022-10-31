@@ -4,15 +4,29 @@ class MembersController {
   membersService = new MembersService();
 
   authCode = async (req, res, next) => {
-    const { email } = req.body;
-    const authCode = await this.membersService.authCode(email);
-    res.status(200).json({ message: authCode });
+    try {
+      const { email } = req.body;
+      const authCode = await this.membersService.authCode(email);
+      res.status(200).json({ message: authCode });
+    } catch (err) {
+      res.status(400).json({ message: "인증 코드 발송에 실패했습니다" });
+    }
   };
 
   createMembers = async (req, res, next) => {
-    const { email, password } = req.body;
-    await this.membersService.createMembers(email, password);
-    res.status(201).json({ message: "회원가입에 성공하였습니다" });
+    try {
+      const { email, SKEY } = req.body;
+
+      const createMembers = await this.membersService.createMembers(
+        email,
+        SKEY
+      );
+      res
+        .status(201)
+        .json({ data: createMembers, message: "회원가입에 성공했습니다" });
+    } catch (err) {
+      res.status(400).json({ message: "회원가입에 실패했습니다" });
+    }
   };
 }
 

@@ -1,11 +1,11 @@
 const MembersRepository = require("../../repository/member");
 const MembersController = require("../../controller/members");
+const MembersService = require("../../service/members");
+const membersService = new MembersService();
 const membersRepository = new MembersRepository();
 const membersController = new MembersController();
 const { Users } = require("../../models");
 const httpMocks = require("node-mocks-http");
-
-const newUsers = require("../data/newUsers");
 
 Users.create = jest.fn();
 
@@ -17,21 +17,8 @@ beforeEach(() => {
 });
 
 describe("create Members", () => {
-  beforeEach(() => {
-    req.body = newUsers;
-  });
-
-  it("createMembers가 함수인지 확인", () => {
-    expect(typeof membersRepository.createMembers).toBe("function");
-  });
-
-  it("createMembers가 정상적으로 호출되는지 확인", async () => {
-    await membersRepository.createMembers(req, res, next);
-    expect(Users.create).toBeCalledWith(newUsers);
-  });
-
-  it("createMembers의 statusCode가 정상적으로 뜨는지 확인", async () => {
-    await membersController.createMembers(req, res);
-    expect(res.statusCode).toBe(201);
+  it("createMembers의 creat가 정상적으로 호출되는지 확인", async () => {
+    await membersRepository.createMembers("alstjq1826@gmail.com");
+    expect(Users.create).toBeCalledWith({ email: "alstjq1826@gmail.com" });
   });
 });

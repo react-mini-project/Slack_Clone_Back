@@ -1,9 +1,17 @@
 require("dotenv").config();
+const Joi = require("joi");
 const MembersRepository = require("../repository/member");
+const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const randomstring = require("randomstring");
-
 const random = randomstring.generate(6);
+const schema = Joi.object({
+  email: Joi.string().email({
+    minDomainSegments: 2,
+    tlds: { allow: ["com", "net"] },
+  }),
+});
+
 class MembersService {
   membersRepository = new MembersRepository();
 
@@ -28,9 +36,16 @@ class MembersService {
     return random;
   };
 
-  createMembers = async (email, password) => {
-    await this.membersRepository.createMembers(email, password);
-    return;
+  createMembers = async (email, SKEY) => {
+    schema.validate({ email });
+    if (SKEY === process.env.SKEY) {
+      await this.membersRepository.createMembers(email);
+    } else {
+      throw new Error();
+    }
+    return {
+      token: jwt.sign({ email }, process.env.SECRETKEY),
+    };
   };
 }
 
