@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const { Chats } = require("./models")
 const indexRouter = require("./routes/index");
 const PORT = 3000;
 const path = require("path");
@@ -15,32 +16,38 @@ app.get('/', (req, res) => {
 })
 
 app.get('/get_messages', (req, res) => {
-  connection.query('SELECT * FROM messages', (error, messages) => {
-    res.end(JSON.stringify(messages))
+  connection.query('SELECT * FROM Chats', (error, message) => {
+    res.end(JSON.stringify(message))
   })
 })
 
 const http = require('http').createServer(app)
 
 const io = require('socket.io')(http)
-const mysql = require('mysql')
+const mysql = require('mysql');
 
 const connection = mysql.createConnection({
-host: process.env.DB_END_POINT,
-user: process.env.DB_USER,
-password: process.env.DB_PASSWORD,
-database: process.env.DB_NAME,
+host: process.env.DB_HOST,
+user: process.env.DB_USERNAME,
+password: process.env.DB_PW,
+database: process.env.DB_DATABASE,
 })
 
 io.on("connection", (socket) => {
   console.log("User connected", socket.id);
-  socket.on("new_message", (data) => {
-      console.log("Client says", data);
-
-  io.emit('new_message', data)
+  socket.on("new_message", async (data) => {
+    const {email, message, room} = data;
+    const result = await Chats.create({
+      email,
+      room,
+      message
+    });
+    // res.json({ result })
+    
+  io.emit('new_message', data, result)
 
   connection.query(
-      "INSERT INTO messages (message) VALUES ('" + data + "')",
+      "INSERT INTO Chats (message) VALUES ('" + data + "')",
     )
     })
   });
