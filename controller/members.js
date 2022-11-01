@@ -28,7 +28,15 @@ class MembersController {
     // }
   };
 
-  updateMember = async () => {};
+  updateMember = async (req, res, next) => {
+    try {
+      const { email, profileName, nickname } = req.body;
+      await this.membersService.updateMember(email, profileName, nickname);
+      res.status(200).json({ message: "그 동안 감사했습니다" });
+    } catch (err) {
+      res.status(400).json({ message: "회원 정보가 일치하는지 확인해 주세요" });
+    }
+  };
 
   deleteMember = async () => {};
 }
