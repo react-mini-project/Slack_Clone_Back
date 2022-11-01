@@ -1,15 +1,18 @@
+const { Chat } = require("./models");
+const jwt = require("jsonwebtoken");
 const express = require("express");
+const socketioJwt = require("socketio-jwt");
 const cors = require("cors");
 const app = express();
 const { Chats } = require("./models")
 const indexRouter = require("./routes/index");
-const PORT = 3000;
-const path = require("path");
-app.use(cors());
-app.set("view engine", "ejs");
 
 app.use(express.json());
 app.use("/", indexRouter);
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
+});
+
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html')
@@ -26,6 +29,7 @@ const http = require('http').createServer(app)
 const io = require('socket.io')(http)
 const mysql = require('mysql');
 
+const cookieParser = require("cookie-parser");
 const connection = mysql.createConnection({
 host: process.env.DB_HOST,
 user: process.env.DB_USERNAME,
@@ -51,9 +55,9 @@ io.on("connection", (socket) => {
     )
     })
   });
-
-const port = 3000
+});
+const port = 3000;
 
 http.listen(port, () => {
-console.log(`Listening to port ${port}`)
-})
+  console.log(`Listening to port ${port}`);
+});

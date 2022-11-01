@@ -16,37 +16,63 @@ class MembersService {
   membersRepository = new MembersRepository();
 
   authCode = async (email) => {
-    let transporter = nodemailer.createTransport({
-      service: "daum",
-      host: "smtp.daum.net",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.DB_EMAIL,
-        pass: process.env.DB_PASSWORD,
-      },
-    });
+    try {
+      let transporter = nodemailer.createTransport({
+        service: "daum",
+        host: "smtp.daum.net",
+        port: 465,
+        secure: true,
+        auth: {
+          user: process.env.DB_EMAIL,
+          pass: process.env.DB_PASSWORD,
+        },
+      });
 
-    await transporter.sendMail({
-      from: `"최강 1조 Team" <alstjq123579@daum.net>`,
-      to: email,
-      subject: "최강 1조 Auth Number",
-      text: random,
-    });
+      await transporter.sendMail({
+        from: `"최강 1조 Team" <alstjq123579@daum.net>`,
+        to: email,
+        subject: "최강 1조 Auth Number",
+        text: random,
+      });
+    } catch (err) {
+      throw new Error();
+    }
     return random;
   };
 
   createMembers = async (email, SKEY) => {
-    schema.validate({ email });
-    if (SKEY === process.env.SKEY) {
-      await this.membersRepository.createMembers(email);
-    } else {
+    try {
+      schema.validate({ email });
+      if (SKEY === process.env.SKEY) {
+        const profileName = email.split("@")[0];
+        const createMember = await this.membersRepository.createMembers(
+          email,
+          profileName
+        );
+        return {
+          token: `Bearer ${jwt.sign({ email }, process.env.SECRETKEY)}`,
+          createMember,
+        };
+      }
+    } catch (err) {
       throw new Error();
     }
-    return {
-      token: jwt.sign({ email }, process.env.SECRETKEY),
-    };
   };
+
+  updateMember = async (email, profileName, nickname) => {
+    try {
+      const updateMember = await this.membersRepository.updateMember(
+        email,
+        profileName,
+        nickname
+      );
+      return updateMember;
+    } catch (err) {
+      throw new Error();
+    }
+  };
+
+  deleteMember = async () => {};
 }
 
 module.exports = MembersService;
