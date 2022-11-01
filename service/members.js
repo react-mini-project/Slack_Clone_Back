@@ -39,15 +39,23 @@ class MembersService {
   createMembers = async (email, SKEY) => {
     schema.validate({ email });
     if (SKEY === process.env.SKEY) {
-      await this.membersRepository.createMembers(email);
+      const profileName = email.split("@")[0];
+      const createMember = await this.membersRepository.createMembers(
+        email,
+        profileName
+      );
+      return {
+        token: `Bearer ${jwt.sign({ email }, process.env.SECRETKEY)}`,
+        createMember,
+      };
     } else {
-      throw new Error();
+      throw Error({ message: "회원가입에 실패했습니다" });
     }
-    return {
-      token: `Bearer ${jwt.sign({ email }, process.env.SECRETKEY)}`,
-      email,
-    };
   };
+
+  updateMember = async () => {};
+
+  deleteMember = async () => {};
 }
 
 module.exports = MembersService;

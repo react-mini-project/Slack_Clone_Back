@@ -1,8 +1,10 @@
+const { Chat } = require("./models");
+const jwt = require("jsonwebtoken");
 const express = require("express");
+const socketioJwt = require("socketio-jwt");
 const cors = require("cors");
 const app = express();
 const indexRouter = require("./routes/index");
-app.use(cors());
 
 app.use(express.json());
 app.use("/", indexRouter);
@@ -20,7 +22,7 @@ const http = require("http").createServer(app);
 
 const io = require("socket.io")(http);
 const mysql = require("mysql");
-
+const cookieParser = require("cookie-parser");
 const connection = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USERNAME,
@@ -29,18 +31,13 @@ const connection = mysql.createConnection({
 });
 
 io.on("connection", (socket) => {
-  console.log("User connected", socket.id);
   socket.on("new_message", (data) => {
     console.log("Client says", data);
-
     io.emit("new_message", data);
 
-    connection.query(
-      "INSERT INTO socket_test (message) VALUES ('" + data + "')"
-    );
+    connection.query("INSERT INTO messages (message) VALUES ('" + data + "')");
   });
 });
-
 const port = 3000;
 
 http.listen(port, () => {
