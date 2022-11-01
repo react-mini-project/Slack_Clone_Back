@@ -29,6 +29,8 @@
     "randomstring": "^1.2.3",
     "sequelize": "^6.25.3",
     "socket.io": "^4.5.3",
+    "socketio-jwt": "^4.6.2",
+    "socketio-jwt-auth": "^0.2.1",
     "swagger": "^0.7.5",
     "swagger-jsdoc": "^6.2.5",
     "swagger-ui": "^4.15.2",

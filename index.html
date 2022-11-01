@@ -58,7 +58,7 @@
   <!-- List where all messages will be displayed -->
   <!-- <ul id="messages"></ul> -->
   <script>
-    const socket = io("http://43.201.30.125:3000");
+    const socket = io("http://43.200.180.128:3000");
 
     function sendMessage() {
       let message = document.querySelector("#message");
@@ -84,7 +84,7 @@
       messages.appendChild(li); // ul 에 자식으로 li 추가하기
     });
 
-    fetch("http://43.201.30.125:3000/get_messages")
+    fetch("http://43.200.180.128:3000//get_messages")
       .then((res) => res.json())
       .then((data) => {
         const messages = document.querySelector("#messages");
