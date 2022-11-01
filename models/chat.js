@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Chat.init(
+  Chats.init(
     {
       chatId: {
         primaryKey: true,
@@ -23,9 +23,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Chat",
+      modelName: "Chats",
     }
   );
-  return Chat;
+  return Chats;
 };
 

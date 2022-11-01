@@ -72,7 +72,14 @@ class MembersService {
     }
   };
 
-  deleteMember = async () => {};
+  deleteMember = async (email) => {
+    try {
+      const deleteMember = await this.membersRepository.deleteMember(email);
+      return deleteMember;
+    } catch (err) {
+      throw new Error();
+    }
+  };
 }
 
 module.exports = MembersService;

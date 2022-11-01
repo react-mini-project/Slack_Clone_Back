@@ -55,7 +55,6 @@ io.on("connection", (socket) => {
     )
     })
   });
-});
 const port = 3000;
 
 http.listen(port, () => {
