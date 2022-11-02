@@ -40,7 +40,7 @@ class MembersService {
     return random;
   };
 
-  createMembers = async (email, SKEY) => {
+  createMembers = async (email) => {
     try {
       schema.validate({ email });
       if (SKEY === process.env.SKEY) {
