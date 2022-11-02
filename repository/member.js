@@ -1,6 +1,10 @@
 const { Users } = require("../models");
 
 class MembersRepository {
+  findAllMembers = async () => {
+    const findAllMembers = await Users.findAll({});
+    return findAllMembers;
+  };
   createMembers = async (email, profileName) => {
     try {
       const createMembers = await Users.create({
@@ -27,9 +31,7 @@ class MembersRepository {
 
   deleteMember = async (email) => {
     try {
-      const deleteMember = await Users.destroy(
-        { where: { email } }
-      );
+      const deleteMember = await Users.destroy({ where: { email } });
       return deleteMember;
     } catch (err) {
       throw new Error();
