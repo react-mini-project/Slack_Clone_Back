@@ -6,7 +6,12 @@ const { Chats } = require("../models");
 router.post("/", async (req, res) => {
   const { room } = req.body;
   await Rooms.create({ room });
-  res.status(201).json({ message: "채널이 생성되었습니다" });
+  const findAllRoom = await Rooms.findAll({});
+  res.status(201).json(findAllRoom);
 });
 
+router.get("/", async (req, res) => {
+  const findAllRoom = await Rooms.findAll({});
+  res.status(200).json(findAllRoom);
+});
 module.exports = router;
