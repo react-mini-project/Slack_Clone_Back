@@ -3,7 +3,10 @@ const router = express.Router();
 const MembersController = require("../controller/members");
 const membersController = new MembersController();
 
+router.get("/", membersController.findAllMembers);
 router.post("/signupAuth", membersController.authCode);
 router.post("/signup", membersController.createMembers);
+router.put("/", membersController.updateMember);
+router.delete("/", membersController.deleteMember);
 
 module.exports = router;

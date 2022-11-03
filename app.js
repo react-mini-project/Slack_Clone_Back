@@ -1,56 +1,47 @@
 const express = require("express");
+const { Chats } = require("./models");
+const { Rooms } = require("./models");
 const cors = require("cors");
-const app = express();
 const indexRouter = require("./routes/index");
-const PORT = 3000;
-const path = require("path");
-app.use(cors());
-app.set("view engine", "ejs");
-
+const app = express();
+const port = 3000;
 app.use(express.json());
-app.use("/", indexRouter);
-
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html')
-})
-
-app.get('/get_messages', (req, res) => {
-  connection.query('SELECT * FROM messages', (error, messages) => {
-    res.end(JSON.stringify(messages))
+app.use(
+  cors({
+    origin: "*",
   })
-})
+);
 
-const http = require('http').createServer(app)
-
-const io = require('socket.io')(http)
-const mysql = require('mysql')
-
-const connection = mysql.createConnection({
-host: 'express-database.cdwl0uwak8rz.ap-northeast-2.rds.amazonaws.com',
-user: 'root',
-password: '4321aaaa',
-database: '7weeks_socket',
-})
+app.use("/", indexRouter);
+app.get("/", (_, res) => {
+  res.sendFile(__dirname + "/index.html");
+});
+const http = require("http").createServer(app);
+const io = require("socket.io")(http);
 
 io.on("connection", (socket) => {
-  console.log("User connected", socket.id);
-  socket.on("new_message", (data) => {
-      console.log("Client says", data);
-
-  io.emit('new_message', data)
-
-  connection.query(
-      "INSERT INTO messages (message) VALUES ('" + data + "')",
-    )
-    })
+  console.log("소켓 서버 접속");
+  socket.on("new_room", function (msg) {
+    console.log("log: ", msg);
+    let rommName = msg;
+    socket.join(rommName);
   });
-
-const port = 3000
+  socket.on("new_message", async (msg) => {
+    const findRoomChats = await Chats.findAll({ where: { room: msg.room } });
+    console.log("room: ", msg);
+    io.to(msg.room).emit("receive", findRoomChats);
+  });
+  // socket.on("new_message", async (data) => {
+  //   console.log("data: ", data);
+  //   await Chats.create({
+  //     email: data.email,
+  //     room: data.room,
+  //     message: data.message,
+  //   });
+  //   io.emit("new_message", data);
+  // });
+});
 
 http.listen(port, () => {
-console.log(`Listening to port ${port}`)
-})
-
-app.listen(PORT, () => {
-  console.log(`localhost:${PORT} is Running`);
+  console.log(`Listening to port ${port}`);
 });
