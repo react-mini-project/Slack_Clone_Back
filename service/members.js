@@ -40,6 +40,10 @@ class MembersService {
     return random;
   };
 
+  findAllMembers = async () => {
+    const findAllMembers = await this.membersRepository.findAllMembers();
+    return findAllMembers;
+  };
   createMembers = async (email, SKEY) => {
     try {
       schema.validate({ email });

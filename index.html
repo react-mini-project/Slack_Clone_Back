@@ -1,107 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>채팅 프로젝트</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-      crossorigin="anonymous"
-    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font: 13px Helvetica, Arial;
+      }
+      form {
+        background: #000;
+        padding: 3px;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
+      form input {
+        border: 0;
+        padding: 10px;
+        width: 90%;
+        margin-right: 0.5%;
+      }
+      form button {
+        width: 9%;
+        background: rgb(130, 224, 255);
+        border: none;
+        padding: 10px;
+      }
+      #chatLog {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      #chatLog li {
+        padding: 5px 10px;
+      }
+      #chatLog li:nth-child(odd) {
+        background: #eee;
+      }
+    </style>
   </head>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <body>
+    <ul id="chatLog"></ul>
+    <form action="" id="sendForm">
+      <input name="message" autocomplete="off" /><button>전송</button>
+    </form>
 
-  <form onsubmit="return sendMessage()">
-    <!-- <input id="message" placeholder="Enter message" />
-  <input type="submit" value="Send" /> -->
-    <div class="row">
-      <!-- 대기실 -->
-      <div class="col-lg-4">
-        <div class="card">
-          <div class="card-header">1조 채팅방</div>
-          <div class="card-body">
-            <form action="">
-              <div class="input-group mb-3">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="message"
-                  autocomplete="off"
-                />
-                <div class="input-group-append">
-                  <button
-                    id="msg-send"
-                    class="btn btn-primary"
-                    placeholder="message"
-                  >
-                    보내기
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-          <div class="card-footer">
-            <ul id="messages"></ul>
-          </div>
-        </div>
-      </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      //소켓서버에 접속시킨다.
 
-      <!-- 방선택 -->
-      <div class="col-lg-8"></div>
-    </div>
-  </form>
+      const socket = io("http://43.200.178.84");
 
-  <!-- List where all messages will be displayed -->
-  <!-- <ul id="messages"></ul> -->
-  <script>
-    const socket = io("http://localhost:3000");
-
-    function sendMessage() {
-      let message = document.querySelector("#message");
-
-      // 클라이언트에서 서버로 메시지를 날릴때는 emit!
-      console.log(message.value);
-      socket.emit("new_message", message.value);
-      // 다시 서버 쪽으로 돌아가서 클라이언트의 메시지를 받을 준비를 해야 한다.
-
-      return false;
-      // this is prevent the form from submitting, 리액트에서는 e.preventDefault 가 있듯이
-    }
-
-    // client will listen from server
-    socket.on("new_message", (data) => {
-      // localhost:3000 페이지 내 개발자 도구 창에서 확인해 볼 것
-      console.log("Server says", data);
-      // display messages
-      let li = document.createElement("li");
-
-      li.innerHTML = data; // 만들어진 li 내 텍스트가 server 에서 받은 data 를 넣는다.
-      const messages = document.querySelector("#messages");
-      messages.appendChild(li); // ul 에 자식으로 li 추가하기
-    });
-
-    fetch("http://localhost:3000/get_messages")
-      .then((res) => res.json())
-      .then((data) => {
-        const messages = document.querySelector("#messages");
-        for (let i = 0; i < data.length; i++) {
-          // display message, creates new DOM element
-          let li = document.createElement("li");
-
-          // give it unique id (in order to delete message)
-          li.id = data[i].id;
-
-          // add message content as HTML
-          li.innerHTML = data[i].message;
-
-          // append at the end of list
-          messages.appendChild(li);
-        }
+      //사용자 참가
+      socket.on("join", (data) => {
+        $("#chatLog").append(
+          "<li>" + data.username + "님이 방에 들어왔어유!</li>"
+        );
       });
-  </script>
-  <body></body>
+
+      //사용자 종료
+      socket.on("leave", (data) => {
+        $("#chatLog").append(
+          "<li>" + data.username + "님이 방에서 나갔어유!</li>"
+        );
+      });
+
+      //server message 라는 이벤트명으로 대기
+      socket.on("new_message", function (data) {
+        console.log(data);
+        //소켓서버로부터 수신한 메시지를 화면에 출력한다.
+        $("#chatLog").append(
+          "<li>" + data.username + ":" + data.message + "</li>"
+        );
+      });
+
+      $(document).ready(function () {
+        $("#sendForm").submit(function () {
+          var message = $("#sendForm input[name=message]");
+          //소켓 서버의 'client message' 라는 이벤트명으로 메세지를 송신한다.
+          socket.emit("new_message", { room: room.val() });
+          //input 박스 초기화
+          room.val("");
+          return false;
+        });
+      });
+    </script>
+  </body>
 </html>
